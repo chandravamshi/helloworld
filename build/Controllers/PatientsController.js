@@ -26,7 +26,9 @@ const routing_controllers_1 = require("routing-controllers");
 const typedi_1 = require("typedi");
 const PatientsService_1 = require("../Services/PatientsService");
 const Patients_1 = require("../Classes/Patients");
-const ValidationError_1 = require("../Middelwares/ValidationError");
+const ValidationErrors_1 = require("../Middelwares/ValidationErrors");
+const PatientsReqDto_1 = require("../dto/PatientsReqDto");
+// import { MyMiddleware } from '../Middelwares/ValidationError';
 let PatientsController = class PatientsController {
     constructor(patientsService) {
         this.patientsService = patientsService;
@@ -43,6 +45,7 @@ let PatientsController = class PatientsController {
             }
         });
     }
+    // 
     insertRecord(request, data, response) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -52,19 +55,35 @@ let PatientsController = class PatientsController {
             catch (err) {
                 console.log('/insert');
                 // console.log(e.message);
-                // return response.status(500).send(err);
+                return response.status(500).send(err);
             }
         });
     }
-    getOneRecord(response, id) {
+    getOneRecord(response, params) {
         return __awaiter(this, void 0, void 0, function* () {
+            // ,{required:true} { validate: { stopAtFirstError: true } }
+            // stopAtFirstError: true, validationError: {
+            //     target: true,
+            //     value: true
+            // }
+            // if(id && typeof id === "number" ) {
+            //     const patient = await this.patientsService.getRecord(id);
+            //      response.status(200).send(patient);
+            // }
+            // else  {
+            //     if(typeof id !== "number"){
+            //         throw new BadRequestError('parameter id should be number')
+            //     }
+            //     else{
+            //         throw new BadRequestError('parameter id is required')
+            //     }
+            // }
             try {
-                const patient = yield this.patientsService.getRecord(id);
-                console.log(patient);
-                return response.status(200).send(patient);
+                const patient = yield this.patientsService.getRecord(params.id);
+                response.status(200).send(patient);
             }
-            catch (e) {
-                throw new Error();
+            catch (error) {
+                throw error;
             }
         });
     }
@@ -88,10 +107,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PatientsController.prototype, "getAll", null);
 __decorate([
-    (0, routing_controllers_1.UseBefore)(ValidationError_1.MyMiddleware),
     (0, routing_controllers_1.Post)('/insert'),
+    (0, routing_controllers_1.UseAfter)(ValidationErrors_1.ValidationErrors),
     __param(0, (0, routing_controllers_1.Req)()),
-    __param(1, (0, routing_controllers_1.Body)({ validate: true })),
+    __param(1, (0, routing_controllers_1.Body)({ validate: { whitelist: true, forbidNonWhitelisted: true } })),
     __param(2, (0, routing_controllers_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Patients_1.Patients, Object]),
@@ -99,10 +118,11 @@ __decorate([
 ], PatientsController.prototype, "insertRecord", null);
 __decorate([
     (0, routing_controllers_1.Get)('/getOne'),
+    (0, routing_controllers_1.UseAfter)(ValidationErrors_1.ValidationErrors),
     __param(0, (0, routing_controllers_1.Res)()),
-    __param(1, (0, routing_controllers_1.QueryParam)('id')),
+    __param(1, (0, routing_controllers_1.QueryParams)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:paramtypes", [Object, PatientsReqDto_1.GetOneReq]),
     __metadata("design:returntype", Promise)
 ], PatientsController.prototype, "getOneRecord", null);
 __decorate([

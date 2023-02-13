@@ -10,6 +10,8 @@ exports.ValidationErrors = void 0;
 const typedi_1 = require("typedi");
 let ValidationErrors = class ValidationErrors {
     error(error, request, res, next) {
+        console.log('errorrr');
+        console.log(error);
         if (error) {
             const responseObject = {};
             responseObject.message = "You have an error in your request's body. Check 'errors' field for more details!";
@@ -17,12 +19,12 @@ let ValidationErrors = class ValidationErrors {
             responseObject.status = 0;
             responseObject.data = {};
             responseObject.data.message = [];
-            error.errors.forEach((element) => {
-                Object.keys(element.constraints).forEach((type) => {
-                    responseObject.data.message.push(`property ${element.constraints[type]}`);
-                });
-            });
-            return res.json(responseObject);
+            // error.errors.forEach((element: ValidationError) => {
+            //     Object.keys(element.constraints).forEach((type) => {
+            //         responseObject.data.message.push(`property ${element.constraints[type]}`);
+            //     });
+            // });
+            res.json(responseObject);
         }
     }
 };

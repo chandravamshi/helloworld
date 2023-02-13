@@ -8,15 +8,18 @@ const client_1 = require("@prisma/client");
 require("reflect-metadata");
 const typedi_1 = require("typedi");
 const PatientsController_1 = require("./Controllers/PatientsController");
-const ValidationError_1 = require("./Middelwares/ValidationError");
+const RequestErrorHandler_1 = require("./Middelwares/RequestErrorHandler");
 (0, routing_controllers_1.useContainer)(typedi_1.Container);
 let compression = require('compression');
 var morgan = require('morgan');
 // creates express app, registers all controller routes and returns you express app instance
 const app = (0, routing_controllers_1.createExpressServer)({
     defaultErrorHandler: false,
-    controllers: [TestController_1.TestController, PatientsController_1.PatientsController],
-    middlewares: [ValidationError_1.MyMiddleware],
+    // we specify controllers we want to use
+    middlewares: [RequestErrorHandler_1.RequestErrorHandler, RequestErrorHandler_1.NoEndPoint]
+});
+(0, routing_controllers_1.useExpressServer)(app, {
+    controllers: [TestController_1.TestController, PatientsController_1.PatientsController]
 });
 app.use(morgan(process.env.LOG_FORMAT || "common"));
 app.use(compression());

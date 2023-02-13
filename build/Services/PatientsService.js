@@ -34,14 +34,6 @@ let PatientsService = class PatientsService {
             // });
             return 'patient';
         });
-        this.getRecord = (id) => __awaiter(this, void 0, void 0, function* () {
-            const patient = yield index_1.prisma.patients.findUnique({
-                where: {
-                    id: id,
-                },
-            });
-            return patient;
-        });
         this.deleteRecord = (id) => __awaiter(this, void 0, void 0, function* () {
             const patient = yield index_1.prisma.patients.delete({
                 where: {
@@ -51,6 +43,22 @@ let PatientsService = class PatientsService {
             return patient;
         });
     }
+    getRecord(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const patient = yield index_1.prisma.patients.findUnique({
+                    where: {
+                        id: id,
+                    },
+                });
+                return patient;
+            }
+            catch (e) {
+                throw e;
+            }
+        });
+    }
+    ;
 };
 PatientsService = __decorate([
     (0, typedi_1.Service)()

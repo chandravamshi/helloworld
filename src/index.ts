@@ -1,12 +1,11 @@
 // this shim is required
-import { createExpressServer, useContainer } from 'routing-controllers';
+import { createExpressServer, useContainer, useExpressServer } from 'routing-controllers';
 import { TestController } from './Controllers/TestController';
 import { PrismaClient } from '@prisma/client'
 import "reflect-metadata"
 import { Container } from 'typedi';
 import { PatientsController } from './Controllers/PatientsController';
-import { MyMiddleware } from './Middelwares/ValidationError';
-
+import { NoEndPoint, RequestErrorHandler } from './Middelwares/RequestErrorHandler';
 
 useContainer(Container);
 let compression = require('compression');
@@ -14,9 +13,13 @@ var morgan = require('morgan')
 // creates express app, registers all controller routes and returns you express app instance
 const app = createExpressServer({
   defaultErrorHandler: false,
-  controllers: [TestController, PatientsController], // we specify controllers we want to use
-  middlewares: [MyMiddleware],
+  // we specify controllers we want to use
+  middlewares: [RequestErrorHandler, NoEndPoint]
 });
+
+useExpressServer(app, {
+  controllers: [TestController, PatientsController]
+})
 
 app.use(morgan(process.env.LOG_FORMAT || "common"));
 app.use(compression());
